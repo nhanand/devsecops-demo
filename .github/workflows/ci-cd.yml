@@ -178,8 +178,9 @@ jobs:
           
       - name: Commit and push changes
         run: |
+          git fetch origin main
+          git reset --hard origin/main
           git add kubernetes/deployment.yaml
           git commit -m "Update Kubernetes deployment with image tag: ${{ needs.docker.outputs.image_tag }} [skip ci]" || echo "No changes to commit"
-          git pull --rebase origin main
           git push origin main
          
