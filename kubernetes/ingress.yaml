@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: tic-tac-toe.example.com  # Replace with your actual domain
+  - host: anandstudy.site  # Replace with your actual domain
     http:
       paths:
       - path: /
