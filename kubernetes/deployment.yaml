@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: tic-tac-toe
-          image: dockeruser534/devsecops-demo:sha-fb8d825
+          image: dockeruser534/myapp:sha-1748e11
           imagePullPolicy: Always
           ports:
             - containerPort: 80
