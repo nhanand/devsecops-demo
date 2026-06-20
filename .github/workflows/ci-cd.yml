@@ -129,43 +129,45 @@ jobs:
         run: echo "image_tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
   update-k8s:
-    name: Update Kubernetes Deployment
-    runs-on: ubuntu-latest
-    needs: [docker]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+   name: Update Kubernetes Deployment
+   runs-on: ubuntu-latest
+   needs: [docker]
+   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.TOKEN }}
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.TOKEN }}
+        fetch-depth: 0
 
-      - name: Setup Git config
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+    - name: Setup Git config
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
 
-      - name: Update Kubernetes deployment file
-        env:
-          IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/myapp
-          IMAGE_TAG: sha-${{ github.sha }}
+    - name: Update Kubernetes deployment image
+      env:
+        IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/myapp
+        IMAGE_TAG: sha-${{ github.sha }}
 
-        run: |
-          NEW_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
-          echo "Updating deployment to: $NEW_IMAGE"
+      run: |
+        NEW_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
+        echo "Updating to: $NEW_IMAGE"
 
-          # Safer replacement (no full-file risk)
-          sed -i "s|image: .*myapp.*|image: ${NEW_IMAGE}|g" kubernetes/deployment.yaml
+        # BEST SAFE METHOD (recommended over sed)
+        sed -i "s|image: .*|image: ${NEW_IMAGE}|g" kubernetes/deployment.yaml
 
-          echo "Updated deployment:"
-          grep "image:" kubernetes/deployment.yaml
+        echo "After update:"
+        cat kubernetes/deployment.yaml
 
-      - name: Commit and push changes
-        run: |
-          git fetch origin main
+    - name: Commit changes
+      run: |
+        git add kubernetes/deployment.yaml
 
-          git add kubernetes/deployment.yaml
+        git diff --cached --quiet && echo "No changes detected" && exit 0
 
-          git commit -m "Update Kubernetes image to ${IMAGE_TAG} [skip ci]" || echo "No changes to commit"
+        git commit -m "Update K8s image to ${IMAGE_TAG} [skip ci]"
+        git push origin HEAD:maines image to ${IMAGE_TAG} [skip ci]" || echo "No changes to commit"
 
           git push origin main
