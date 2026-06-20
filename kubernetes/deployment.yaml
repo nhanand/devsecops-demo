@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: tic-tac-toe
-          image: "dockeruser534/myapp:sha-8712bab9a30dfc96776b2be343f9d3a893c7368c"
+          image: "dockeruser534/myapp:sha-6705d103699df1e5210230c55073bb199828cf3e"
           imagePullPolicy: Always
           ports:
             - containerPort: 80
