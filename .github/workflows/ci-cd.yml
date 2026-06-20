@@ -164,10 +164,7 @@ jobs:
     - name: Commit changes
       run: |
         git add kubernetes/deployment.yaml
-
         git diff --cached --quiet && echo "No changes detected" && exit 0
-
         git commit -m "Update K8s image to ${IMAGE_TAG} [skip ci]"
         git push origin HEAD:maines image to ${IMAGE_TAG} [skip ci]" || echo "No changes to commit"
-
-          git push origin main
+        git push origin main
