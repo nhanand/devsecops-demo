@@ -25,7 +25,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-
       - run: npm test || echo "No tests found"
 
   lint:
@@ -41,7 +40,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-
       - run: npm run lint
 
   build:
@@ -60,7 +58,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-
       - run: npm run build
 
       - uses: actions/upload-artifact@v4
@@ -119,7 +116,7 @@ jobs:
 
       - name: Set image tag output
         id: image_tag
-        run: echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+        run: echo "image_tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
   update-k8s:
     name: Update Kubernetes Deployment
@@ -152,14 +149,14 @@ jobs:
 
       - name: Update Kubernetes deployment
         run: |
-          NEW_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
+          export NEW_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
 
           echo "Updating image: ${NEW_IMAGE}"
 
           yq -i '.spec.template.spec.containers[0].image = strenv(NEW_IMAGE)' \
             kubernetes/deployment.yaml
 
-          echo "Updated deployment file:"
+          echo "Updated deployment:"
           cat kubernetes/deployment.yaml
 
       - name: Commit and push
