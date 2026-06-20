@@ -11,6 +11,7 @@ spec:
   ingressClassName: nginx
   rules:
   - host: anandstudy.site  # Replace with your actual domain
+  - host: www.anandstudy.site
     http:
       paths:
       - path: /
