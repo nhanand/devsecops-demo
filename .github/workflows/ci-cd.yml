@@ -162,20 +162,24 @@ jobs:
         env:
           REGISTRY: docker.io
           IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/myapp
+          IMAGE_TAG: ${{ needs.docker.outputs.image_tag }}
           
         run: |
           # Define the new image with tag
-          NEW_IMAGE="NEW_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}""
+           NEW_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
+           echo "New image: $NEW_IMAGE"
           
           # Update the deployment file directly
-          sed -i "s|image: ${REGISTRY}/.*|image: ${NEW_IMAGE}|g" kubernetes/deployment.yaml
+          sed -i "s|image: .*|image: ${NEW_IMAGE}|g" kubernetes/deployment.yaml
           
           # Verify the change
           echo "Updated deployment to use image: ${NEW_IMAGE}"
-          grep -A 1 "image:" kubernetes/deployment.yaml
-      
+          grep "image:" kubernetes/deployment.yaml
+          
       - name: Commit and push changes
         run: |
           git add kubernetes/deployment.yaml
-          git commit -m "Update Kubernetes deployment with new image tag: ${{ needs.docker.outputs.image_tag }} [skip ci]" || echo "No changes to commit"
-          git push
+          git commit -m "Update Kubernetes deployment with image tag: ${{ needs.docker.outputs.image_tag }} [skip ci]" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push origin main
+         
